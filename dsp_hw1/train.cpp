@@ -56,16 +56,17 @@ int main()
 
   	// Create 2D vector alpha //
   	vector< vector<double> > alpha;
-  	// Calculate the initial values
   	vector<double> alpha_init, alpha_value;
+
+  	// Calculate the initial values
   	for(int i = 0; i < hmm_initial.state_num; i++){
   		double tmp_pi = hmm_initial.initial[i];
   		double tmp_b = hmm_initial.observation[i][seq_int[0][0]];
   		alpha_init.push_back(tmp_pi * tmp_b); // FIX!!  LEFT 0 -> ONLY FIRST LINE
   	}
   	alpha.push_back(alpha_init);
-  	// Calculate values for each time period after initial alpha (forward algorithm)
   	
+  	// Calculate values for each time period after initial alpha (forward algorithm)
   	for(int i = 1; i < time_period; i++){
   		// For each alpha[i][j]
   		for(int j = 0; j < hmm_initial.state_num; j++){	
@@ -74,7 +75,7 @@ int main()
   			for(int k = 0; k < hmm_initial.state_num; k++){
   				tmp_sum += alpha[i - 1][k] * hmm_initial.transition[k][j];
   			}
-  			tmp_b = hmm_initial.observation[j][seq_int[0][i-1]];
+  			tmp_b = hmm_initial.observation[seq_int[0][i-1]][j]; // FIX
   			alpha_value.push_back(tmp_sum * tmp_b);	
   		}
   		// Store the row for time i to alpha
@@ -82,6 +83,36 @@ int main()
   		alpha_value.clear();
   	}
 
+  	// Create 2D vector beta - reverse//
+  	vector< vector<double> > beta;
+  	vector<double> beta_init, beta_value;
+  	
+  	// Set the initial values
+  	for(int i = 0; i < hmm_initial.state_num; i++){
+  		beta_init.push_back(1);
+  	}
+  	beta.push_back(beta_init);
+
+  	// Calculate values for each time period before initial beta (backward algorithm)
+  	for(int i = 1; i < time_period; i++){
+  		for(int j = 0; j < hmm_initial.state_num; j++){
+  			double tmp_sum = 0;
+  			for(int k = 0; k < hmm_initial.state_num; k++){
+  				tmp_sum += hmm_initial.transition[j][k] * hmm_initial.observation[seq_int[0][time_period - i]][k] * beta[i-1][k];
+  			}
+  			beta_value.push_back(tmp_sum);
+  		}
+  		beta.push_back(beta_value);
+  		beta_value.clear();
+  	}
+	
+  	// Full alpha
+  	for(int i = 0; i < 5; i++){
+  		for(int j = 0; j < 5; j++){
+  			printf("%f ",beta[i][j]);
+  		}
+  		printf("\n");
+  	}
 
   	
 
