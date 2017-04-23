@@ -18,10 +18,11 @@ int main()
 */
 	// Set up global variables//
 	int time_period = 0;
-
-	// Load initial HMM //
-	HMM hmm_initial;
-	loadHMM( &hmm_initial, "model_init.txt" );
+	vector<double> pi;
+	vector<vector<double> > a;
+	vector<vector<double> > b;
+	int state_num = 0;
+	int observ_num = 0;
 
 	// Define a map to map chars to int //
 	map<char,int> seq_map;
@@ -54,29 +55,55 @@ int main()
   		seq_int.push_back(tmp);
   	}
 
+  	// Load initial HMM //
+	HMM hmm_initial;
+	loadHMM( &hmm_initial, "model_init.txt" );
+	
+	// Save initial HMM as pi, a and b;
+	state_num = hmm_initial.state_num;
+	observ_num = hmm_initial.observ_num;
+	for(int i = 0 ; i < state_num; i++){
+		pi.push_back(hmm_initial.initial[i]);
+	}
+	for(int i = 0; i < state_num; i++){
+		vector<double> tmp;
+		for(int j = 0; j < state_num; j++){
+			tmp.push_back(hmm_initial.transition[i][j]);
+		}
+		a.push_back(tmp);
+		tmp.clear();	
+	}
+
+	for(int i = 0; i < observ_num; i++){
+		vector<double> tmp;
+		for(int j = 0; j < state_num; j++){
+			tmp.push_back(hmm_initial.observation[i][j]);
+		}
+		b.push_back(tmp);
+		tmp.clear();
+	}
+
+
   	// Create 2D vector alpha //
   	vector< vector<double> > alpha;
   	vector<double> alpha_init, alpha_value;
 
   	// Calculate the initial values
-  	for(int i = 0; i < hmm_initial.state_num; i++){
-  		double tmp_pi = hmm_initial.initial[i];
-  		double tmp_b = hmm_initial.observation[i][seq_int[0][0]];
-  		alpha_init.push_back(tmp_pi * tmp_b); // FIX!!  LEFT 0 -> ONLY FIRST LINE
+  	for(int i = 0; i < state_num; i++){
+  		alpha_init.push_back(pi[i] * b[i][seq_int[0][0]]); // FIX!!  LEFT 0 -> ONLY FIRST LINE
   	}
   	alpha.push_back(alpha_init);
   	
   	// Calculate values for each time period after initial alpha (forward algorithm)
-  	for(int i = 1; i < time_period; i++){
+  	for(int t = 1; t < time_period; t++){
   		// For each alpha[i][j]
-  		for(int j = 0; j < hmm_initial.state_num; j++){	
+  		for(int i = 0; i < state_num; i++){	
   			double tmp_sum = 0;
   			double tmp_b = 0;
-  			for(int k = 0; k < hmm_initial.state_num; k++){
-  				tmp_sum += alpha[i - 1][k] * hmm_initial.transition[k][j];
+  			for(int j = 0; j < state_num; j++){
+  				tmp_sum += alpha[t - 1][j] * a[j][i];
   			}
-  			tmp_b = hmm_initial.observation[seq_int[0][i-1]][j]; // FIX
-  			alpha_value.push_back(tmp_sum * tmp_b);	
+  			alpha_value.push_back(tmp_sum * b[seq_int[0][t]][i]);	
   		}
   		// Store the row for time i to alpha
   		alpha.push_back(alpha_value);
@@ -88,17 +115,17 @@ int main()
   	vector<double> beta_init, beta_value;
   	
   	// Set the initial values
-  	for(int i = 0; i < hmm_initial.state_num; i++){
+  	for(int i = 0; i < state_num; i++){
   		beta_init.push_back(1);
   	}
   	beta.push_back(beta_init);
 
   	// Calculate values for each time period before initial beta (backward algorithm)
-  	for(int i = 1; i < time_period; i++){
-  		for(int j = 0; j < hmm_initial.state_num; j++){
+  	for(int t = 1; t < time_period; t++){
+  		for(int i = 0; i < state_num; i++){
   			double tmp_sum = 0;
-  			for(int k = 0; k < hmm_initial.state_num; k++){
-  				tmp_sum += hmm_initial.transition[j][k] * hmm_initial.observation[seq_int[0][time_period - i]][k] * beta[i-1][k];
+  			for(int j = 0; j < state_num; j++){
+  				tmp_sum += a[i][j] * b[seq_int[0][time_period - t]][j] * beta[t-1][j];
   			}
   			beta_value.push_back(tmp_sum);
   		}
@@ -112,25 +139,60 @@ int main()
 	vector<double> gamma_value;
 
 	// Calculate values for each time period for gamma 
-  	for(int i = 0; i < time_period; i++){
+  	for(int t = 0; t < time_period; t++){
   		double denom = 0;
-  		for(int j = 0; j < hmm_initial.state_num; j++){
-  			denom += alpha[i][j] * beta[i][j];
+  		for(int i = 0; i < state_num; i++){
+  			denom += alpha[t][i] * beta[t][i];
   		}
-  		for(int j = 0; j < hmm_initial.state_num; j++){
-  			gamma_value.push_back(alpha[i][j] * beta[i][j] / denom);
+  		for(int i = 0; i < state_num; i++){
+  			gamma_value.push_back(alpha[t][i] * beta[t][i] / denom);
   		}
   		gamma.push_back(gamma_value);
   		gamma_value.clear();
   	}
 
-  	for(int i = 0; i < 5; i++){
-  		for(int j = 0; j < 6; j++){
-  			printf("%f ",gamma[i][j]);
+  	
+	// Create 3D vector epsilon
+  	vector<vector<vector<double> > > epsilon;
+  	vector<vector<double> > epsilon_ij;
+  	vector<double> epsilon_value;
+
+  	// Calculate values for each time period for epsilon
+  	for(int t = 0; t < time_period - 1; t++){
+  		double denom = 0;
+  		for(int i = 0; i < state_num; i++){
+  			for(int j = 0; j < state_num; j++){
+  				denom += alpha[t][i] * a[i][j] * b[seq_int[0][t + 1]][j] * beta[t + 1][j];
+  			}	
   		}
-  		printf("\n");
+  		for(int i = 0; i < state_num; i++){
+  			for(int j = 0; j < state_num; j++){
+  				epsilon_value.push_back(alpha[t][i] * a[i][j] * b[seq_int[0][t + 1]][j] * beta[t + 1][j] / denom);
+  			}
+  			epsilon_ij.push_back(epsilon_value);
+  			epsilon_value.clear();
+  		}
+  		epsilon.push_back(epsilon_ij);
+  		epsilon_ij.clear();
   	}
 
+  	
+
+
+  	
+  	/*
+  	for(int t = 0; t < 1; t++){
+  		double sum = 0;
+	  	for(int i = 0; i < 6; i++){
+	  		for(int j = 0; j < 6; j++){
+	  			sum += epsilon[t][i][j];
+	  			printf("%f ",epsilon[t][i][j]);
+	  		}
+	  		printf("\n");
+	  	}
+	  	printf("%f\n",sum);
+	}
+	*/
   	/* Test print
 	// Number of time periods
   	printf("%d\n",time_period);
