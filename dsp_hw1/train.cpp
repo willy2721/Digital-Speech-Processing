@@ -6,7 +6,7 @@
 #include <vector>
 #include <iterator>
 #include <map>
-#include <typeinfo>
+#include <algorithm>
 using namespace std;
 
 int main()
@@ -83,7 +83,7 @@ int main()
   		alpha_value.clear();
   	}
 
-  	// Create 2D vector beta - reverse//
+  	// Create 2D vector beta - reverse //
   	vector< vector<double> > beta;
   	vector<double> beta_init, beta_value;
   	
@@ -105,16 +105,31 @@ int main()
   		beta.push_back(beta_value);
   		beta_value.clear();
   	}
-	
-  	// Full alpha
+	reverse(beta.begin(),beta.end());
+
+	// Create 2D vector gamma //
+	vector< vector<double> > gamma;
+	vector<double> gamma_value;
+
+	// Calculate values for each time period for gamma 
+  	for(int i = 0; i < time_period; i++){
+  		double denom = 0;
+  		for(int j = 0; j < hmm_initial.state_num; j++){
+  			denom += alpha[i][j] * beta[i][j];
+  		}
+  		for(int j = 0; j < hmm_initial.state_num; j++){
+  			gamma_value.push_back(alpha[i][j] * beta[i][j] / denom);
+  		}
+  		gamma.push_back(gamma_value);
+  		gamma_value.clear();
+  	}
+
   	for(int i = 0; i < 5; i++){
-  		for(int j = 0; j < 5; j++){
-  			printf("%f ",beta[i][j]);
+  		for(int j = 0; j < 6; j++){
+  			printf("%f ",gamma[i][j]);
   		}
   		printf("\n");
   	}
-
-  	
 
   	/* Test print
 	// Number of time periods
@@ -123,9 +138,9 @@ int main()
 	for(int i = 0; i < hmm_initial.state_num; i++){
   		printf("%f ", alpha[0][i]);
   	}
-  	// Full alpha
+  	// Full alpha (or beta)
   	for(int i = 0; i < 5; i++){
-  		for(int j = 0; j < 5; j++){
+  		for(int j = 0; j < 6; j++){
   			printf("%f ",alpha[i][j]);
   		}
   		printf("\n");
