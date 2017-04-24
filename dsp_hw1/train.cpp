@@ -16,13 +16,22 @@ int main()
 	load_models( "modellist.txt", hmms, 5);
 	dump_models( hmms, 5);
 */
+
 	// Set up global variables//
 	int time_period = 0;
-	vector<double> pi;
-	vector<vector<double> > a;
-	vector<vector<double> > b;
+	// gamma_one to store the sum of gamma ones for the pi update
+	// gamma_t1 to store the sums of denominators for the a_ij update
+	// gamma_tk and t to store the sums of nominators and denominators for the b_jk update
+	vector<double> pi, gamma_one, gamma_t1, gamma_tk, gamma_t;
+	// epsilon_t1 to store the sum of nominators for the a_ij update
+	vector<vector<double> > a, b, epsilon_t1, ;
+
+	
+
+
 	int state_num = 0;
 	int observ_num = 0;
+
 
 	// Define a map to map chars to int //
 	map<char,int> seq_map;
@@ -62,9 +71,13 @@ int main()
 	// Save initial HMM as pi, a and b;
 	state_num = hmm_initial.state_num;
 	observ_num = hmm_initial.observ_num;
+	
+	// Save hmm_initial.initial as pi
 	for(int i = 0 ; i < state_num; i++){
 		pi.push_back(hmm_initial.initial[i]);
 	}
+
+	// Save hmm_initial.transition as a
 	for(int i = 0; i < state_num; i++){
 		vector<double> tmp;
 		for(int j = 0; j < state_num; j++){
@@ -74,6 +87,7 @@ int main()
 		tmp.clear();	
 	}
 
+	// Save hmm_initial.observation as b
 	for(int i = 0; i < observ_num; i++){
 		vector<double> tmp;
 		for(int j = 0; j < state_num; j++){
@@ -151,7 +165,6 @@ int main()
   		gamma_value.clear();
   	}
 
-  	
 	// Create 3D vector epsilon
   	vector<vector<vector<double> > > epsilon;
   	vector<vector<double> > epsilon_ij;
@@ -175,6 +188,8 @@ int main()
   		epsilon.push_back(epsilon_ij);
   		epsilon_ij.clear();
   	}
+
+
 
   	
 
