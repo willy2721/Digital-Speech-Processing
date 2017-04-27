@@ -192,6 +192,10 @@ int main()
 	vector<vector<double> > gamma_t_each(observ_num,vector<double>(state_num,0));
 	
   	// Accumulate gamma_one, epsilon_t_min, gamma_t_min, gamma_tk, gamma_t ...
+  	for(int i = 0; i < state_num; i++){
+  		gamma_one[i] = gamma[0][i];  // FIX?
+  	}
+
 
   	for(int t = 0; t < time_period; t++){
   		// for epsilon_t_min and gamma_t_min
@@ -212,9 +216,50 @@ int main()
   				gamma_t_each[seq_int[0][t]][i] += gamma[t][i]; // FIX!!
   			}  			
   		}
-  		
   	}
 
+  	// Update pi, a and b
+  	for(int i = 0; i < state_num; i++){
+  		
+  		pi[i] = gamma_one[i];
+  		for(int j = 0; j < state_num; j++){
+  			a[i][j] = epsilon_t_min[i][j] / gamma_t_min[i];
+  		}
+  		for(int k = 0; k < observ_num; k++){
+  			b[k][i] = gamma_t_each[k][i] / gamma_t[i];
+  		}
+  	}
+
+  	
+
+  	/* Test print 
+  	// Printing pi, a and b
+	printf("pi:\n");
+  	for(int i = 0; i < state_num; i++){
+  		printf("%f ", pi[i]);
+  	}
+  	printf("\n");
+
+  	printf("a:\n");
+  	for(int i = 0; i < state_num; i++){
+  		for(int j = 0; j < state_num; j++){
+  			printf("%f ", a[i][j]);	
+  		}
+  		printf("\n");
+  	}
+  	printf("\n");
+
+  	printf("b:\n");
+  	for(int i = 0; i < observ_num; i++){
+  		for(int j = 0; j < state_num; j++){
+  			printf("%f ", b[i][j]);	
+  		}
+  		printf("\n");
+  	}
+  	printf("\n");
+
+  	/* Test print
+  	// Printing accumulations
   	printf("epsilon_t_min:\n");
   	for(int i = 0; i < state_num; i++){
 	  	for(int j = 0; j < state_num; j++){
@@ -243,7 +288,7 @@ int main()
 		}	
 		printf("\n");		
 	}
-
+	/*
   	
   	
   	/* Test print
@@ -254,8 +299,8 @@ int main()
   		printf("%f ", alpha[0][i]);
   	}
   	// Full alpha (or beta)
-  	for(int i = 0; i < 6; i++){
-  		for(int j = 0; j < 6; j++){
+  	for(int i = 0; i < state_num; i++){
+  		for(int j = 0; j < state_num; j++){
   			printf("%f ",alpha[i][j]);
   		}
   		printf("\n");
@@ -270,8 +315,8 @@ int main()
   	// Epsilon
   	for(int t = 0; t < 1; t++){
   		double sum = 0;
-	  	for(int i = 0; i < 6; i++){
-	  		for(int j = 0; j < 6; j++){
+	  	for(int i = 0; i < state_num; i++){
+	  		for(int j = 0; j < state_num; j++){
 	  			sum += epsilon[t][i][j];
 	  			printf("%f ",epsilon[t][i][j]);
 	  		}
