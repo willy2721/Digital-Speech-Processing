@@ -33,8 +33,6 @@ int main(int argc, char *argv[])
 
 	// Set up global variables//
 	int time_period = 0;
-	vector<double> pi;
-	vector<vector<double> > a, b;
 	int state_num = 0;
 	int observ_num = 0;
 	int sample_num = 0;
@@ -51,7 +49,7 @@ int main(int argc, char *argv[])
 	// Load testing data //
 	vector<string> test_seq;
 	string line;
-  	ifstream myfile;
+  	ifstream myfile(test_data);
   	if (myfile.is_open()){
     	while ( getline (myfile,line) ){
     		if(time_period == 0) time_period = line.length();
@@ -72,20 +70,133 @@ int main(int argc, char *argv[])
   	}
 
   	HMM hmms[5];
-	load_models( "modellist.txt", hmms, 5);
-	dump_models( hmms, 5);
-	
+	load_models(model_list, hmms, 5);
+	state_num = hmms[0].state_num;
+	observ_num = hmms[0].observ_num;
+
+	//dump_models( hmms, 5);
 	// vector to store answer for every sample
 	vector<int> ans;
-	
 	vector< vector<double> > delta;
+	vector<double > delta_value;
+
 	for(int n = 0; n < sample_num; n++){
-		for(int i = 0; i < sizeof(hmms); i++){
-			double max_prob = 0;
-			int max_model;
+		double max_prob = 0;
+		int max_model;
+		
+		for(int i = 0; i < 5; i++){
+			// Record the largest probability for each model	
+			double max_delta = 0;
+			for(int t = 0; t < time_period; t++){
+				for(int j = 0; j < state_num; j++){
+					double max_delta_a = 0;
+					if(t == 0){
+						delta_value.push_back(hmms[i].initial[j] * hmms[i].observation[test_int[n][t]][j]);	
+					}
+					
+					//printf("%f",hmms[0].initial[j] * hmms[0].observation[test_int[0][0]][j]);
+					else {
+						for(int k = 0; k < state_num; k++){
+							if(delta[t - 1][k] * hmms[i].transition[k][j] > max_delta_a){
+								max_delta_a = delta[t - 1][k] * hmms[i].transition[k][j];
+							}
+						}
+						delta_value.push_back(max_delta_a * hmms[i].observation[test_int[n][t]][j]);
+					}	
+				}
+				delta.push_back(delta_value);
+				delta_value.clear();
+				if(t == time_period - 1){
+					for(int s = 0; s < time_period; s++){
+						if(delta[t][s] > max_delta)
+							max_delta = delta[t][s];	
+					}
+				}
+			}
+			
+			if(max_delta > max_prob){
+				max_prob = max_delta;
+				max_model = i;
+			}
 			
 		}
+		ans.push_back(max_model);
 	}
+
+	for(int i = 0; i < sample_num; i++){
+		printf("%i ",ans[i]);	
+	}
+	
+
+	/*
+	for(int i = 0; i < time_period; i++){
+		for(int j = 0; j < state_num; j++){
+			printf("%f ",delta[i][j]);
+		}
+		printf("\n");
+	}
+	*/
+		// Test print
+		//for(int s = 0; s < state_num; s++){
+		//	printf("%f ",delta[time_period - 1][s]);
+		//}
+		//printf("\n\n");
+
+
+
+
+
+	/*
+	for(int n = 0; n < sample_num; n++){
+		double max_prob = 0;
+		int max_model;
+		for(int i = 0; i < sizeof(hmms); i++){
+			double max_delta = 0;
+			for(int t = 0; t < time_period; t++){
+				for(int j = 0; j < state_num; j++){
+					double max_delta_a = 0;
+					int max_k;
+					if(t == 0){
+						delta_value.push_back(hmms[i].initial[j] * hmms[i].observation[test_int[n][t]][j]);
+					}
+					else {
+						for(int k = 0; k < state_num; k++){
+							if(delta[t - 1][k] * hmms[i].transition[k][j] > max_delta_a){
+								max_delta_a = delta[t - 1][k] * hmms[i].transition[k][j];
+								max_k = k;
+							}
+						}
+						delta_value.push_back(max_delta_a * hmms[i].observation[test_int[n][t - 1]][j]);
+					}
+					if(t == time_period - 1){
+						if(delta[t][j] > max_prob)
+							max_delta = delta[t][j];
+					}
+				}
+				delta.push_back(delta_value);
+				delta_value.clear();
+			}
+			if(max_delta > max_prob){
+				max_prob = max_delta;
+				max_model = i;
+			}
+			if(n == 0){
+				// Test print
+				for(int s = 0; s < state_num; s++){
+					printf("%f ",delta[time_period - 1][s]);
+				}
+				printf("\n\n");
+			}
+		}
+		ans.push_back(max_model);
+
+
+	}
+	*/
+	// Test print
+	//for(int i = 0; i < ans.size(); i++){
+	//	printf("%i",ans[i]);
+	//}
 
 
 	return 0;
