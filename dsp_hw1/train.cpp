@@ -24,7 +24,7 @@ namespace patch
 int main(int argc, char *argv[])
 {
 	if(argc != 5){
-		printf("%s unable to execute due to the wrong number of arguments", argv[0]);
+		printf("%s unable to execute due to wrong number of arguments", argv[0]);
 	}
 	
 	int rounds = atoi(argv[1]);
