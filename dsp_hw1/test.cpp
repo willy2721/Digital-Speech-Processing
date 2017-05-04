@@ -82,8 +82,9 @@ int main(int argc, char *argv[])
 
 	for(int n = 0; n < sample_num; n++){
 		double max_prob = 0;
-		int max_model;
+		int max_model = -1;
 		
+		// Try the first hmm for the first sample
 		for(int i = 0; i < 5; i++){
 			// Record the largest probability for each model	
 			double max_delta = 0;
@@ -107,9 +108,9 @@ int main(int argc, char *argv[])
 				delta.push_back(delta_value);
 				delta_value.clear();
 				if(t == time_period - 1){
-					for(int s = 0; s < time_period; s++){
+					for(int s = 0; s < state_num; s++){
 						if(delta[t][s] > max_delta)
-							max_delta = delta[t][s];	
+							max_delta = delta[t][s];
 					}
 				}
 			}
@@ -118,12 +119,14 @@ int main(int argc, char *argv[])
 				max_prob = max_delta;
 				max_model = i;
 			}
+
+			delta.clear();
 			
 		}
 		ans.push_back(max_model);
 	}
 
-	for(int i = 0; i < sample_num; i++){
+	for(int i = 0; i < ans.size(); i++){
 		printf("%i ",ans[i]);	
 	}
 	
