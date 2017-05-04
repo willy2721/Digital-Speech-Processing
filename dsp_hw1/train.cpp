@@ -106,13 +106,21 @@ int main(int argc, char *argv[])
 
 		  	// Calculate the initial values
 		  	for(int i = 0; i < state_num; i++){
-		  		alpha_value.push_back(hmm_initial.initial[i] * hmm_initial.observation[i][seq_int[n][0]]); // FIX!!  LEFT 0 -> ONLY FIRST LINE
+		  		alpha_value.push_back(hmm_initial.initial[i] * hmm_initial.observation[seq_int[n][0]][i]); // FIX!!  LEFT 0 -> ONLY FIRST LINE
 		  		beta_value.push_back(1);
 		  	}
+		  	/*
+		  	for(int z = 0; z < alpha_value.size(); z++){
+		  		printf("%g ",alpha_value[z]);
+		  	}
+		  	printf("\n");
+		  	*/
 		  	alpha.push_back(alpha_value);
 		  	alpha_value.clear();
 		  	beta.push_back(beta_value);
 		  	beta_value.clear();
+
+
 
 		  	// Calculate values for each time period after initial alpha (forward) and initial beta (backward)
 		  	for(int t = 1; t < time_period; t++){
@@ -149,6 +157,33 @@ int main(int argc, char *argv[])
 		  		gamma.push_back(gamma_value);
 		  		gamma_value.clear();
 		  	}
+		  	/*
+		  	// Full alpha (or beta)
+		  	printf("alpha:\n");
+		  	for(int i = 0; i < time_period; i++){
+		  		for(int j = 0; j < state_num; j++){
+		  			printf("%g ",alpha[i][j]);
+		  		}
+		  		printf("\n");
+		  	}
+		  	printf("\n");
+		  	printf("beta:\n");
+		  	for(int i = 0; i < time_period; i++){
+		  		for(int j = 0; j < state_num; j++){
+		  			printf("%g ",beta[i][j]);
+		  		}
+		  		printf("\n");
+		  	}
+		  	printf("\n");
+		  	printf("gamma:\n");
+		  	for(int i = 0; i < time_period; i++){
+		  		for(int j = 0; j < state_num; j++){
+		  			printf("%g ",gamma[i][j]);
+		  		}
+		  		printf("\n");
+		  	}
+		  	*/
+
 
 			// Create 3D vector epsilon
 		  	vector<vector<vector<double> > > epsilon;
@@ -217,7 +252,7 @@ int main(int argc, char *argv[])
 
 	// Write hmm_initial.initial, hmm_initial.transition, hmm_initial.observation to file
 	ofstream outfile;
-	outfile.open(argv[4]);
+	outfile.open(out_model);
 	string output = "";
 	output += ("initial: " + string(patch::to_string(state_num)) + "\n");
 	for(int i = 0; i < state_num; i++){
@@ -255,14 +290,14 @@ int main(int argc, char *argv[])
   	// Printing hmm_initial.initial, hmm_initial.transition and hmm_initial.observation
 	printf("hmm_initial.initial:\n");
   	for(int i = 0; i < state_num; i++){
-  		printf("%f ", hmm_initial.initial[i]);
+  		printf("%g ", hmm_initial.initial[i]);
   	}
   	printf("\n");
 
   	printf("hmm_initial.transition:\n");
   	for(int i = 0; i < state_num; i++){
   		for(int j = 0; j < state_num; j++){
-  			printf("%f ", hmm_initial.transition[i][j]);	
+  			printf("%g ", hmm_initial.transition[i][j]);	
   		}
   		printf("\n");
   	}
@@ -271,7 +306,7 @@ int main(int argc, char *argv[])
   	printf("hmm_initial.observation:\n");
   	for(int i = 0; i < observ_num; i++){
   		for(int j = 0; j < state_num; j++){
-  			printf("%f ", hmm_initial.observation[i][j]);	
+  			printf("%g ", hmm_initial.observation[i][j]);	
   		}
   		printf("\n");
   	}
@@ -284,14 +319,14 @@ int main(int argc, char *argv[])
   	// Printing accumulations
 	printf("gamma_one:\n");
   	for(int i = 0; i < state_num; i++){
-	  	printf("%f ",gamma_one[i]);
+	  	printf("%g ",gamma_one[i]);
 	}
 	printf("\n\n");
 
   	printf("epsilon_t_min:\n");
   	for(int i = 0; i < state_num; i++){
 	  	for(int j = 0; j < state_num; j++){
-	  		printf("%f ",epsilon_t_min[i][j]);
+	  		printf("%g ",epsilon_t_min[i][j]);
 	  	}
 	  	printf("\n");
 	}
@@ -299,13 +334,13 @@ int main(int argc, char *argv[])
 
 	printf("gamma_t_min:\n");
   	for(int i = 0; i < state_num; i++){
-	  	printf("%f ",gamma_t_min[i]);
+	  	printf("%g ",gamma_t_min[i]);
 	}
 	printf("\n\n");
 
 	printf("gamma_t:\n");
   	for(int i = 0; i < state_num; i++){
-	  	printf("%f ",gamma_t[i]);
+	  	printf("%g ",gamma_t[i]);
 	}
 	printf("\n\n");
 
@@ -313,7 +348,7 @@ int main(int argc, char *argv[])
 	for(int i = 0; i < observ_num; i++){
 		printf("gamma %i:\n", i);
 		for(int j = 0; j < state_num; j++){
-			printf("%f ",gamma_t_each[i][j]);	
+			printf("%g ",gamma_t_each[i][j]);	
 		}	
 		printf("\n");		
 	}
@@ -323,12 +358,12 @@ int main(int argc, char *argv[])
   	printf("%d\n",time_period);
 	// Initial alpha
 	for(int i = 0; i < hmm_initial.state_num; i++){
-  		printf("%f ", alpha[0][i]);
+  		printf("%g ", alpha[0][i]);
   	}
   	// Full alpha (or beta)
   	for(int i = 0; i < state_num; i++){
   		for(int j = 0; j < state_num; j++){
-  			printf("%f ",alpha[i][j]);
+  			printf("%g ",alpha[i][j]);
   		}
   		printf("\n");
   	}
@@ -345,11 +380,11 @@ int main(int argc, char *argv[])
 	  	for(int i = 0; i < state_num; i++){
 	  		for(int j = 0; j < state_num; j++){
 	  			sum += epsilon[t][i][j];
-	  			printf("%f ",epsilon[t][i][j]);
+	  			printf("%g ",epsilon[t][i][j]);
 	  		}
 	  		printf("\n");
 	  	}
-	  	printf("%f\n",sum);
+	  	printf("%g\n",sum);
 	}
 	*/
 		

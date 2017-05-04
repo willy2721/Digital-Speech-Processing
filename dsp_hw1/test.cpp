@@ -126,80 +126,34 @@ int main(int argc, char *argv[])
 		ans.push_back(max_model);
 	}
 
-	for(int i = 0; i < ans.size(); i++){
-		printf("%i ",ans[i]);	
+	ofstream outfile;
+	outfile.open(out_result);
+	string output = "";
+	for(int i = 0; i < sample_num; i++){
+		output += "model_0" + patch::to_string(ans[i] + 1) + ".txt\n";
 	}
+	
+	outfile << output;
+	outfile.close();
+
+	//for(int i = 0; i < ans.size(); i++){
+	//	printf("%i ",ans[i]);	
+	//}
 	
 
 	/*
 	for(int i = 0; i < time_period; i++){
-		for(int j = 0; j < state_num; j++){
+s		for(int j = 0; j < state_num; j++){
 			printf("%f ",delta[i][j]);
 		}
 		printf("\n");
 	}
 	*/
-		// Test print
-		//for(int s = 0; s < state_num; s++){
-		//	printf("%f ",delta[time_period - 1][s]);
-		//}
-		//printf("\n\n");
 
 
 
 
 
-	/*
-	for(int n = 0; n < sample_num; n++){
-		double max_prob = 0;
-		int max_model;
-		for(int i = 0; i < sizeof(hmms); i++){
-			double max_delta = 0;
-			for(int t = 0; t < time_period; t++){
-				for(int j = 0; j < state_num; j++){
-					double max_delta_a = 0;
-					int max_k;
-					if(t == 0){
-						delta_value.push_back(hmms[i].initial[j] * hmms[i].observation[test_int[n][t]][j]);
-					}
-					else {
-						for(int k = 0; k < state_num; k++){
-							if(delta[t - 1][k] * hmms[i].transition[k][j] > max_delta_a){
-								max_delta_a = delta[t - 1][k] * hmms[i].transition[k][j];
-								max_k = k;
-							}
-						}
-						delta_value.push_back(max_delta_a * hmms[i].observation[test_int[n][t - 1]][j]);
-					}
-					if(t == time_period - 1){
-						if(delta[t][j] > max_prob)
-							max_delta = delta[t][j];
-					}
-				}
-				delta.push_back(delta_value);
-				delta_value.clear();
-			}
-			if(max_delta > max_prob){
-				max_prob = max_delta;
-				max_model = i;
-			}
-			if(n == 0){
-				// Test print
-				for(int s = 0; s < state_num; s++){
-					printf("%f ",delta[time_period - 1][s]);
-				}
-				printf("\n\n");
-			}
-		}
-		ans.push_back(max_model);
-
-
-	}
-	*/
-	// Test print
-	//for(int i = 0; i < ans.size(); i++){
-	//	printf("%i",ans[i]);
-	//}
 
 
 	return 0;
