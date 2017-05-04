@@ -10,17 +10,26 @@
 #include <algorithm>
 using namespace std;
 
-
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
 
 int main(int argc, char *argv[])
 {
 	// Reads two text files and compares the accuracy
-	if(argc != 3){
+	if(argc != 4){
 		printf("%s unable to execute due to wrong number of arguments\n", argv[0]);
 	}
 	
 	char* result = argv[1];
 	char* answer = argv[2];
+  char* outname = argv[3];
 	vector<int > res;
 	vector<int > ans;
 	double ac = 0;
@@ -70,9 +79,13 @@ int main(int argc, char *argv[])
   			ac++;
   	}
   	accuracy = ac / num;
-  	printf("Correct answers = %f\n Total answers = %f\n Accuracy = %f\n",ac,num,accuracy);
-	//char* out_result = argv[3];
-
+  	//printf("Correct answers = %f\n Total answers = %f\n Accuracy = %f\n",ac,num,accuracy);
+	  //char* out_result = argv[3];
+    ofstream outfile;
+    outfile.open(outname);
+    string output = string(patch::to_string(accuracy));
+    outfile << output << endl;
+    outfile.close();
 
 	return 0;
 }

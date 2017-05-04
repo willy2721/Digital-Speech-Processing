@@ -109,12 +109,6 @@ int main(int argc, char *argv[])
 		  		alpha_value.push_back(hmm_initial.initial[i] * hmm_initial.observation[seq_int[n][0]][i]); // FIX!!  LEFT 0 -> ONLY FIRST LINE
 		  		beta_value.push_back(1);
 		  	}
-		  	/*
-		  	for(int z = 0; z < alpha_value.size(); z++){
-		  		printf("%g ",alpha_value[z]);
-		  	}
-		  	printf("\n");
-		  	*/
 		  	alpha.push_back(alpha_value);
 		  	alpha_value.clear();
 		  	beta.push_back(beta_value);
@@ -157,34 +151,7 @@ int main(int argc, char *argv[])
 		  		gamma.push_back(gamma_value);
 		  		gamma_value.clear();
 		  	}
-		  	/*
-		  	// Full alpha (or beta)
-		  	printf("alpha:\n");
-		  	for(int i = 0; i < time_period; i++){
-		  		for(int j = 0; j < state_num; j++){
-		  			printf("%g ",alpha[i][j]);
-		  		}
-		  		printf("\n");
-		  	}
-		  	printf("\n");
-		  	printf("beta:\n");
-		  	for(int i = 0; i < time_period; i++){
-		  		for(int j = 0; j < state_num; j++){
-		  			printf("%g ",beta[i][j]);
-		  		}
-		  		printf("\n");
-		  	}
-		  	printf("\n");
-		  	printf("gamma:\n");
-		  	for(int i = 0; i < time_period; i++){
-		  		for(int j = 0; j < state_num; j++){
-		  			printf("%g ",gamma[i][j]);
-		  		}
-		  		printf("\n");
-		  	}
-		  	*/
-
-
+		  	
 			// Create 3D vector epsilon
 		  	vector<vector<vector<double> > > epsilon;
 		  	vector<vector<double> > epsilon_ij;

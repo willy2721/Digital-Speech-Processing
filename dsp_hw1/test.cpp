@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 
 	/*
 	for(int i = 0; i < time_period; i++){
-s		for(int j = 0; j < state_num; j++){
+		for(int j = 0; j < state_num; j++){
 			printf("%f ",delta[i][j]);
 		}
 		printf("\n");
