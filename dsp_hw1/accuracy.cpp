@@ -36,20 +36,21 @@ int main(int argc, char *argv[])
 	double num = 0;
 	double accuracy = 0;
 
-	string line;
+	string line, file, acc;
   	ifstream myresult(result);
   	if (myresult.is_open()){
-    	while ( getline (myresult,line) ){
+    	while ( myresult >> file >> acc ){
     		num++;
-    		if(line == "model_01.txt")
+
+        if(file == "model_01.txt")
     			res.push_back(1);
-    		else if(line == "model_02.txt")
+    		else if(file == "model_02.txt")
     			res.push_back(2);
-    		else if(line == "model_03.txt")
+    		else if(file == "model_03.txt")
     			res.push_back(3);
-    		else if(line == "model_04.txt")
+    		else if(file == "model_04.txt")
     			res.push_back(4);
-    		else if(line == "model_05.txt")
+    		else if(file == "model_05.txt")
     			res.push_back(5);
 
     	}

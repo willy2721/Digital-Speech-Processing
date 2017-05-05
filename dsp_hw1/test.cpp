@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 	// vector to store answer for every sample
 	vector<int> ans;
 	vector< vector<double> > delta;
-	vector<double > delta_value;
+	vector<double > delta_value, prob;
 
 	for(int n = 0; n < sample_num; n++){
 		double max_prob = 0;
@@ -124,13 +124,14 @@ int main(int argc, char *argv[])
 			
 		}
 		ans.push_back(max_model);
+		prob.push_back(max_prob);
 	}
 
 	ofstream outfile;
 	outfile.open(out_result);
 	string output = "";
 	for(int i = 0; i < sample_num; i++){
-		output += "model_0" + patch::to_string(ans[i] + 1) + ".txt\n";
+		output += "model_0" + patch::to_string(ans[i] + 1) + ".txt " + patch::to_string(prob[i]) + "\n";
 	}
 	
 	outfile << output;

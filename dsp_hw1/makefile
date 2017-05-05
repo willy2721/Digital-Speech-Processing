@@ -1,0 +1,12 @@
+# the compiler: gcc for C program, define as g++ for C++
+  CC  = g++
+  CFLAGS  +=
+  LDFLAGS += -lm     # link to math library
+
+  TARGET  = train test accuracy
+
+  all: $(TARGET)
+  # type make/make all to compile test_hmm
+  clean:
+	$(RM) $(TARGET)
+   # type make clean to remove the compiled file
