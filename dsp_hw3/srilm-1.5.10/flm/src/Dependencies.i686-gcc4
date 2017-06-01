@@ -1,0 +1,6 @@
+../bin/i686-gcc4$(BIN_OPTION)/pngram: ../obj/i686-gcc4$(OBJ_OPTION)/pngram.o
+pngram: ../bin/i686-gcc4$(BIN_OPTION)/pngram
+../bin/i686-gcc4$(BIN_OPTION)/fngram-count: ../obj/i686-gcc4$(OBJ_OPTION)/fngram-count.o
+fngram-count: ../bin/i686-gcc4$(BIN_OPTION)/fngram-count
+../bin/i686-gcc4$(BIN_OPTION)/fngram: ../obj/i686-gcc4$(OBJ_OPTION)/fngram.o
+fngram: ../bin/i686-gcc4$(BIN_OPTION)/fngram
