@@ -1,4 +1,0 @@
-../bin/i686-gcc4$(BIN_OPTION)/ztest: ../obj/i686-gcc4$(OBJ_OPTION)/ztest.o
-ztest: ../bin/i686-gcc4$(BIN_OPTION)/ztest
-../bin/i686-gcc4$(BIN_OPTION)/testFile: ../obj/i686-gcc4$(OBJ_OPTION)/testFile.o
-testFile: ../bin/i686-gcc4$(BIN_OPTION)/testFile

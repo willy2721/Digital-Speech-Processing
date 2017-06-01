@@ -1,4 +1,0 @@
-../bin/i686-gcc4$(BIN_OPTION)/testLattice: ../obj/i686-gcc4$(OBJ_OPTION)/testLattice.o
-testLattice: ../bin/i686-gcc4$(BIN_OPTION)/testLattice
-../bin/i686-gcc4$(BIN_OPTION)/lattice-tool: ../obj/i686-gcc4$(OBJ_OPTION)/lattice-tool.o
-lattice-tool: ../bin/i686-gcc4$(BIN_OPTION)/lattice-tool
